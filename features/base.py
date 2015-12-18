@@ -61,7 +61,6 @@ def fbank(signal,samplerate=44100,winlen=0.025,winstep=0.01,
     fb = get_filterbanks(nfilt,nfft,samplerate,lowfreq,highfreq)
     feat = numpy.dot(pspec,fb.T) # compute the filterbank energies
     feat = numpy.where(feat == 0,numpy.finfo(float).eps,feat) # if feat is zero, we get problems with log
-    print len(feat[0])#, feat[0]
     return feat,energy
 
 def logfbank(signal,samplerate=16000,winlen=0.025,winstep=0.01,
