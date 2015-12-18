@@ -22,6 +22,7 @@ class Application(Frame):
     def record(self):
         self.result_label.config(text="煒翔屌臭")
         ''''''
+        #start Recording...
         self.record_seconds = int(self.second_entry.get())
         if self.file_entry.get() == "":
             filename = "output"
@@ -52,9 +53,11 @@ class Application(Frame):
         wf.writeframes(b''.join(frames))
         wf.close()
 
+        #MFCC_dimension = 13
         (rate,sig) = wav.read("%s.wav" % filename)
         mfcc_feat = mfcc(sig,rate)
         
+        #Dump MFCC pickle file
         cPickle.dump(mfcc_feat, open("mfcc_13_%s.pkl" % filename, "wb"))
 
         
