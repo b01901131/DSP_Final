@@ -1,36 +1,62 @@
 from Tkinter import *
+import pyaudio
+import wave
 
+CHUNK = 1024
+FORMAT = pyaudio.paInt16
+CHANNELS = 2
+RATE = 44100
+RECORD_SECONDS = 5
+WAVE_OUTPUT_FILENAME = "output.wav"
 
 class Application(Frame):
-    def say_hi(self):
-        #print "hi there, everyone!"
-        print self.QUIT.config('highlightthickness')
+    def record(self):
+        p = pyaudio.PyAudio()
+        stream = p.open(format=FORMAT,
+                channels=CHANNELS,
+                rate=RATE,
+                input=True,
+                frames_per_buffer=CHUNK)
+        frames = []
+
+        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+            data = stream.read(CHUNK)
+            frames.append(data)
         
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+
+        wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(p.get_sample_size(FORMAT))
+        wf.setframerate(RATE)
+        wf.writeframes(b''.join(frames))
+        wf.close()
 
     def createWidgets(self):
-        self.QUIT = Button(self)
-        self.QUIT["text"] = "QUIT"
-        self.QUIT["fg"]   = "red"
-        self.QUIT["bg"]   = "blue"
-        self.QUIT["command"] =  self.quit
+        self.Quit = Button(self)
+        self.Quit["text"] = "Quit"
+        self.Quit["fg"]   = "red"
+        self.Quit["bg"]   = "blue"
+        self.Quit["command"] =  self.quit
+        self.Quit.grid(row = 0, column = 0)
 
-        self.QUIT.pack({"side": "left"})
+        self.Record = Button(self)
+        self.Record["text"] = "Record"
+        self.Record["fg"]   = "pink"
+        self.Record["command"] = self.record
+        self.Record.grid(row = 1, column = 0)
 
-        self.hi_there = Button(self)
-        self.hi_there["text"] = "Hello"
-        self.hi_there["fg"]   = "pink"
-        self.hi_there["command"] = self.say_hi
-
-        self.hi_there.pack({"side": "left", "expand": 1})
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
-        self.pack()
+        self.grid()
         self.createWidgets()
 
 root = Tk()
 app = Application(master=root)
-app.master.title('FUCK You BItch!')
+app.master.title('Dynamic Time Warping')
 app.master.maxsize(1000,400)
 app.mainloop()
 root.destroy()
