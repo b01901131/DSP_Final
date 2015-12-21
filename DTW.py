@@ -19,7 +19,7 @@ class DTW():
 	#	return arr
 	
 	def calc_DTW(self, a1, a2):
-		print "start"
+		#print "start"
 		l1 = len(a1)
 		l2 = len(a2)
 		self.DTW = np.zeros((l1, l2))
@@ -35,7 +35,7 @@ class DTW():
 				cost = self.dist(a1[i], a2[j])
 				self.DTW[i][j] = cost + min(self.DTW[i][j-1], self.DTW[i-1][j], self.DTW[i-1][j-1])#min(DTW[i-1][j],DTW[i][j-1],DTW[i-1][j-1])
 		#print DTW 
-		print "finish"
+		#print "finish"
 		return self.DTW[l1-1][l2-1]
 
 

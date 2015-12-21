@@ -9,6 +9,7 @@ import pyaudio
 import wave
 import cPickle
 import glob
+import os
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -21,13 +22,11 @@ class Application(Frame):
         self.grid()
         self.createWidgets()
         self.record_seconds = 3 #'''每筆音訊都是三秒'''
-        #self.counter = 5
         self.predict_flag = False
         self.label_feat = [] #'''事先錄好的Feature Signal'''
-        
+        self.prediction = "安安你好"
+
     def record(self):
-        self.result_label.config(text="煒翔屌臭")
-        ''''''
         #start Recording...
         self.record_seconds = int(self.second_entry.get())
         if self.file_entry.get() == "":
@@ -45,6 +44,7 @@ class Application(Frame):
         for i in range(0, int(RATE / CHUNK * self.record_seconds)):
             #if i % 60 == 0:
             #    self.counter_label.config(text="%i" % i)
+            print i / 42.0
             data = stream.read(CHUNK)
             frames.append(data)
         
@@ -71,14 +71,20 @@ class Application(Frame):
         if self.predict_flag == True:
             #TODOs: Load MFCC Label Feature (pkl files) as self.label_feat
             self.label_feat = []
-            list_of_files = glob.glob('*.pkl')  
-            for filename in list_of_files[:-1]:
+            list_of_files = glob.glob('*.pkl')[1:]  
+            for filename in list_of_files:
+                print filename
                 self.label_feat.append(cPickle.load( open( filename, "rb" ) ))
             dtw_result = []
             dtw = DTW()
             dtw_result = [ dtw.calc_DTW(mfcc_feat, arr2) for arr2 in self.label_feat]
-            
-        print dtw_result
+            for i in range(len(list_of_files)):
+                print list_of_files[i], ":", dtw_result[i]
+            os.remove("%s.wav" % self.file_entry.get())
+            os.remove("%s_mfcc_13.pkl" % self.file_entry.get())
+            self.prediction = str(list_of_files[dtw_result.index(min(dtw_result))].split("_")[0])
+            self.result_label.config(text='%s' % self.prediction, fg="red")
+                
 
     def modeSelect(self):
         if self.predict_flag == False:
@@ -103,7 +109,7 @@ class Application(Frame):
         self.record_label = Label(self, text="辨識結果：")
         self.record_label.grid(row=2, column=0)
 
-        self.result_label = Label(self, text="煒翔吃屎")
+        self.result_label = Label(self, text="安安你好")
         self.result_label.grid(row=2, column=1)
 
         #self.counter_label = Label(self, text="0")
