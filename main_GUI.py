@@ -77,10 +77,13 @@ class Application(Frame):
             
             dtw_result = []
             dtw = DTW()
+            #print self.label_feat[0]
+            
             for arr2 in self.label_feat:
                 print len(mfcc_feat), len(arr2)
                 dtw_result.append( dtw.calc_DTW(mfcc_feat, arr2) )
-        #print dtw_result
+            
+        print dtw_result
 
     def modeSelect(self):
         if self.predict_flag == False:

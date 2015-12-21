@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 arr1 = [71,73,75,80,80,80,78,76,75,73,71,71,71,73,75,76,76,68,76,76,75,73,71,70,70,69,68,68,72,74,78,79,80,80,78]
 arr2 = [69,69,73,75,79,80,79,78,76,73,72,71,70,70,69,69,69,71,73,75,76,76,76,76,76,75,73,71,70,70,71,73,75,80,80]
@@ -11,7 +12,7 @@ class DTW():
 		self.DTW = []
 	
 	def dist(self, a, b):
-		return math.sqrt((a-b)*(a-b))
+		return np.linalg.norm(np.array(a)-np.array(b))
 	
 	def new_arr(self, len1, len2):
 		arr = []
@@ -33,11 +34,10 @@ class DTW():
 		for i in range(len(a1)):
 			for j in range(len(a2)):
 				cost = self.dist(a1[i], a2[j])
-				'''only traceback for 1 step !????????'''
 				self.DTW[i][j] = cost + min(self.DTW[i][j-1], self.DTW[i-1][j], self.DTW[i-1][j-1])#min(DTW[i-1][j],DTW[i][j-1],DTW[i-1][j-1])
 		#print DTW 
 		return self.DTW[len(a1)-1][len(a2)-1]
 
 
-#dist = DTW() 
+dist = DTW() 
 #print "DIST",dist.calc_DTW(arr1, arr2)
