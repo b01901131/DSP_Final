@@ -1,13 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
-
 from Tkinter import *
 from features import mfcc
 from features import logfbank
+from DTW import *
 import scipy.io.wavfile as wav
 import pyaudio
 import wave
 import cPickle
+import glob
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -15,10 +16,15 @@ CHANNELS = 2
 RATE = 44100
 
 class Application(Frame):
-    def __init__(self):
-        self.record_seconds = 0
-        self.counter = 5
-
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.grid()
+        self.createWidgets()
+        self.record_seconds = 3 #'''每筆音訊都是三秒'''
+        #self.counter = 5
+        self.predict_flag = False
+        self.label_feat = [] #'''事先錄好的Feature Signal'''
+        
     def record(self):
         self.result_label.config(text="煒翔屌臭")
         ''''''
@@ -30,10 +36,10 @@ class Application(Frame):
             filename = self.file_entry.get()
         p = pyaudio.PyAudio()
         stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
         frames = []
 
         for i in range(0, int(RATE / CHUNK * self.record_seconds)):
@@ -58,21 +64,43 @@ class Application(Frame):
         mfcc_feat = mfcc(sig,rate)
         
         #Dump MFCC pickle file
-        cPickle.dump(mfcc_feat, open("mfcc_13_%s.pkl" % filename, "wb"))
+        cPickle.dump(mfcc_feat, open("%s_mfcc_13.pkl" % filename, "wb"))
+        
+    
+        #Pridict or Just Record only
+        if self.predict_flag == True:
+            #TODOs: Load MFCC Label Feature (pkl files) as self.label_feat
+            self.label_feat = []
+            list_of_files = glob.glob('*.pkl')  
+            for filename in list_of_files[:-1]:
+                self.label_feat.append(cPickle.load( open( filename, "rb" ) ))
+            
+            dtw_result = []
+            dtw = DTW()
+            for arr2 in self.label_feat:
+                print len(mfcc_feat), len(arr2)
+                dtw_result.append( dtw.calc_DTW(mfcc_feat, arr2) )
+        #print dtw_result
 
+    def modeSelect(self):
+        if self.predict_flag == False:
+            self.predict_flag = True
+        else:
+            self.predict_flag = False
         
     def createWidgets(self):
         self.file_label = Label(self, text="檔名：")
         self.file_label.grid(row=0, column=0)
-
         self.file_entry = Entry(self)
         self.file_entry.grid(row=0, column=1)
 
         self.second_label = Label(self, text="秒數：")
         self.second_label.grid(row=1, column=0)
-
         self.second_entry = Entry(self)
         self.second_entry.grid(row=1, column=1)
+
+        self.mode_check = Checkbutton(self, text="預測模式", command=self.modeSelect)
+        self.mode_check.grid(row=3, column = 2)
 
         self.record_label = Label(self, text="辨識結果：")
         self.record_label.grid(row=2, column=0)
@@ -95,11 +123,7 @@ class Application(Frame):
         self.Quit.grid(row = 3, column = 1)
 
 
-    def __init__(self, master=None):
-        Frame.__init__(self, master)
-        self.grid()
-        self.createWidgets()
-
+    
 root = Tk()
 app = Application(master=root)
 app.master.title('Dynamic Time Warping')
