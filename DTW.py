@@ -14,30 +14,30 @@ class DTW():
 	def dist(self, a, b):
 		return np.linalg.norm(np.array(a)-np.array(b))
 	
-	def new_arr(self, len1, len2):
-		arr = []
-		for i in range(len1):
-			new_row = []
-			for j in range(len2):
-				new_row.append(0)
-			arr.append(new_row)
-		return arr
+	#def new_arr(self, len1, len2):
+	#	arr = np.zeros((len1, len2))
+	#	return arr
 	
 	def calc_DTW(self, a1, a2):
-		self.DTW = self.new_arr(len(a1), len(a2))
-	
-		for i in range(len(a1)):
-			self.DTW[i][0] = float("inf")
-		for i in range(len(a2)):
-			self.DTW[0][i] = float("inf")
-	
-		for i in range(len(a1)):
-			for j in range(len(a2)):
+		print "start"
+		l1 = len(a1)
+		l2 = len(a2)
+		self.DTW = np.zeros((l1, l2))
+		
+		inf = np.full(l1, np.inf)
+		self.DTW[:,0] = inf
+
+		inf = np.full(l2, np.inf)
+		self.DTW[0,:] = inf
+
+		for i in range(l1):
+			for j in range(l2):
 				cost = self.dist(a1[i], a2[j])
 				self.DTW[i][j] = cost + min(self.DTW[i][j-1], self.DTW[i-1][j], self.DTW[i-1][j-1])#min(DTW[i-1][j],DTW[i][j-1],DTW[i-1][j-1])
 		#print DTW 
-		return self.DTW[len(a1)-1][len(a2)-1]
+		print "finish"
+		return self.DTW[l1-1][l2-1]
 
 
-dist = DTW() 
+#dist = DTW() 
 #print "DIST",dist.calc_DTW(arr1, arr2)

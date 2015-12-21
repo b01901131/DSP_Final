@@ -74,14 +74,9 @@ class Application(Frame):
             list_of_files = glob.glob('*.pkl')  
             for filename in list_of_files[:-1]:
                 self.label_feat.append(cPickle.load( open( filename, "rb" ) ))
-            
             dtw_result = []
             dtw = DTW()
-            #print self.label_feat[0]
-            
-            for arr2 in self.label_feat:
-                print len(mfcc_feat), len(arr2)
-                dtw_result.append( dtw.calc_DTW(mfcc_feat, arr2) )
+            dtw_result = [ dtw.calc_DTW(mfcc_feat, arr2) for arr2 in self.label_feat]
             
         print dtw_result
 
