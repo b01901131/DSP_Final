@@ -1,9 +1,9 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-#from PyQt4 import QtGui, QtCore
-#from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from PyQt4 import QtGui, QtCore
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 import pyaudio
 import threading
@@ -59,7 +59,7 @@ class LiveFFTWidget(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         
         # customize the UI
-        #self.initUI()
+        self.initUI()
         
         # init class data
         self.initData()       
@@ -172,7 +172,7 @@ class LiveFFTWidget(QtGui.QWidget):
             
             # refreshes the plots
             self.main_figure.canvas.draw()
-if __name__ == "__main__": 
-    app = QtGui.QApplication(sys.argv) 
-    window = LiveFFTWidget() 
-    sys.exit(app.exec_())
+#if __name__ == "__main__": 
+#    app = QtGui.QApplication(sys.argv) 
+#    window = LiveFFTWidget() 
+#    sys.exit(app.exec_())
